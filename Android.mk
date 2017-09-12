@@ -1,25 +1,16 @@
-ifeq ($(call my-dir),$(call project-path-for,qcom-display))
+#Enables the listed display HAL modules
+#libs to be built for QCOM targets only
 
-ifeq ($(TARGET_HAVE_NEW_GRALLOC),true)
-    display-hals := libgralloc
-else
-    display-hals := libgralloc-compat
-endif
+ifeq ($(TARGET_QCOM_DISPLAY_VARIANT),caf-new)
 
-display-hals += libcopybit libvirtual
-display-hals += libhwcomposer liboverlay libqdutils libexternal libqservice
-display-hals += libmemtrack
+display-hals := libgenlock libcopybit libgralloc-compat libexternal libvirtual
+display-hals += libhwcomposer liboverlay libqdutils libqservice libmemalloc
+display-hals += libtilerenderer libmemtrack
 
 ifneq ($(TARGET_PROVIDES_LIBLIGHT),true)
 display-hals += liblight
 endif
 
-ifeq ($(call is-vendor-board-platform,QCOM),true)
-    include $(call all-named-subdir-makefiles,$(display-hals))
-else
-ifneq ($(filter msm8960,$(TARGET_BOARD_PLATFORM)),)
-    #This is for mako since it doesn't have the QCOM make functions
-    include $(call all-named-subdir-makefiles,$(display-hals))
-endif
-endif
+include $(call all-named-subdir-makefiles,$(display-hals))
+
 endif
